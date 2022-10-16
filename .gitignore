@@ -30,3 +30,5 @@
 *.exe
 *.out
 *.app
+Solution/*/bin/Debug
+Solution/*/bin/Release

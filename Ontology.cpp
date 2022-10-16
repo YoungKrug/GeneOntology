@@ -1,157 +1,141 @@
 ﻿#include "Ontology.h"
 
 #include <iostream>
-void Ontology::ReadOncologyDataBase(std::string path, Type delimiterType)
-{
-    std::ifstream reader;
-    std::string line;
-    std::string delimiter = DetermineDelimited(delimiterType);
-    reader = OpenFile(path);
-     while(std::getline(reader, line))
-     {
-         size_t pos = 0;
-         std::string key;
-         bool isFirst = true;
-         while ((pos = line.find(delimiter)) != std::string::npos)
-         {
-             std::string token;
-             token = line.substr(0, pos);
-             if(isFirst) // will be used as the key
-             {
-                 if(_data.find(token) == _data.end())
-                 {
-                     key = token;
-                     //doesnt contain key
-                     _goData.insert({token, std::vector<std::string>()});
-                     isFirst = false;
-                 }
-             }
-             else
-                 _goData[key].emplace_back(token);
-             line.erase(0, pos + delimiter.length());
-         }
-         _goData[key].emplace_back(line);
-    }
-}
+#include <regex>
 
-void Ontology::ReadGenes(std::string path, Type delimiterType)
+void Ontology::ReadFile(std::string filePath, DelimiterType delimiterType, FileType fileType)
 {
     std::ifstream reader;
     std::string line;
     std::string delimiter = DetermineDelimited(delimiterType);
-    reader = OpenFile(path);
+    reader = OpenFile(filePath);
     while(std::getline(reader, line))
     {
-        size_t pos = 0;
-        std::string gene;
-        std::string token;
-        bool isFirst = true;
-        while ((pos = line.find(delimiter)) != std::string::npos)
-        {
-            token = line.substr(0, pos);
-            if(isFirst) // will be used as the key
-            {
-                gene = token;
-                isFirst = false;
-            }
-            else
-                _data[token].genes.emplace_back(gene);
-            line.erase(0, pos + delimiter.length());
-        }
-        _data[token].genes.emplace_back(line);
+        AddToDBBasedOnType(fileType, line, delimiter);
     }
 }
-
-void Ontology::ReadChildren(std::string path, Type delimiterType)
+void Ontology::AddToDBBasedOnType(FileType fileType, std::string line, std::string delimiter)
 {
-    std::ifstream reader;
-    std::string line;
-    std::string delimiter = DetermineDelimited(delimiterType);
-    reader = OpenFile(path);
-    while(std::getline(reader, line))
+    std::string key;
+    std::string a;
+    a.append("[^").append(delimiter).append("]+");
+    std::regex e (a);   // matches delimiters or consecutive non-delimiters
+    std::regex_iterator<std::string::iterator> rit ( line.begin(), line.end(), e );
+    std::regex_iterator<std::string::iterator> rend;
+    int i = 0;
+    while (rit!=rend)
     {
-        size_t pos = 0;
-        std::string key;
-        std::string token;
-        bool isFirst = true;
-        while ((pos = line.find(delimiter)) != std::string::npos)
+        std::string currentString = rit->str();
+        TermidInfo info;
+        GoInfo goInfo;
+        switch(fileType)
         {
-            token = line.substr(0, pos);
-            if(isFirst) // will be used as the key
+            case PARENTS:
+                if(i == 0) // the first key is the termid
+                {
+                    key = currentString;
+                    if(_termidInfo.find(key) == _termidInfo.end()) // which means key is
+                    {
+                        _termidInfo.insert({key, info});
+                    }
+                }
+                else
+                {
+                    _termidInfo[key].parentTermidId.emplace_back(currentString);
+                }
+                break;
+            case CHILDS:
+            if(i == 0) // the first key is the termid
             {
-                key = token;
-                isFirst = false;
+                key = currentString;
+                if(_termidInfo.find(key) == _termidInfo.end()) // which means key is
+                {
+                    _termidInfo.insert({key, info});
+                }
             }
             else
             {
-                _data[key].children.emplace_back(token);
+                _termidInfo[key].childtermidId.emplace_back(currentString);
             }
-            line.erase(0, pos + delimiter.length());
-        }
-        _data[key].children.emplace_back(line);
-    }
-}
-void Ontology::ReadParents(std::string path, Type delimiterType)
-{
-    std::ifstream reader;
-    std::string line;
-    std::string delimiter = DetermineDelimited(delimiterType);
-    reader = OpenFile(path);
-    while(std::getline(reader, line))
-    {
-        size_t pos = 0;
-        std::string key;
-        std::string token;
-        bool isFirst = true;
-        while ((pos = line.find(delimiter)) != std::string::npos)
-        {
-            token = line.substr(0, pos);
-            if(isFirst) // will be used as the key
+                break;
+            case DEFINITIONS:
+                if(i == 0) // the first key is the termid
+                {
+                    key = currentString;
+                    if(_termidInfo.find(key) == _termidInfo.end()) // which means key is
+                    {
+                        _termidInfo.insert({key, info});
+                    }
+                }
+            else
             {
-                key = token;
-                isFirst = false;
+                _termidInfo[key].definition = currentString;
+            }
+                break;
+            case GOACCESSION:
+                if(i == 0)
+                {
+                    //termid Id
+                    key = currentString;
+                }
+                else if(i == 1)
+                {
+                    if(_goInformation.find(currentString) == _goInformation.end()) // which means key is
+                    {
+                        _goInformation.insert({currentString, goInfo});
+                    }
+                    _goInformation[currentString].termidId = key;
+                    key = currentString;
+                }
+                else if(i == 2)
+                {
+                    _goInformation[key].goSection = currentString;
+                }
+                else if(i == 3)
+                {
+                    _goInformation[key].name = currentString;
+                }
+                break;
+            
+            case GENES:
+                if(i == 0) // the first key is the termid
+                {
+                    key = currentString; // key is gene
+                }
+                else
+                {
+                    _termidInfo[currentString].geneId.emplace_back(key);
+                }
+            break;
+            case GOIORNGOI:
+            if(i == 0) // the first key is the termid
+            {
+                key = currentString; // key is gene
             }
             else
             {
-                _data[key].parent.emplace_back(token);
+                int num = std::stoi(currentString);
+                _termidInfo[key].isGOI = (bool)num;
             }
-            line.erase(0, pos + delimiter.length());
+                
+            break;
         }
-        _data[key].parent.emplace_back(line);
+        ++rit;
+        i++;
     }
 }
-
-void Ontology::ReadDefinitions(std::string path, Type delimiterType)
+std::string Ontology::DetermineDelimited(DelimiterType delimiterType)
 {
-    std::ifstream reader;
-    std::string line;
-    std::string delimiter = DetermineDelimited(delimiterType);
-    reader = OpenFile(path);
-    while(std::getline(reader, line))
+    switch (delimiterType)
     {
-        size_t pos = 0;
-        std::string key;
-        std::string token;
-        bool isFirst = true;
-        while ((pos = line.find(delimiter)) != std::string::npos)
-        {
-            token = line.substr(0, pos);
-            if(isFirst) // will be used as the key
-            {
-                key = token;
-                isFirst = false;
-            }
-            line.erase(0, pos + delimiter.length());
-        }
-        _data[key].otherInformation.emplace_back(line);
+    case TAB_DELINEATED:
+        return"\t";
+    case COMMA_DELINEATED:
+        return ",";
     }
+    return "";
+    
 }
-
-Ontology::OntologyNode Ontology::GetData(std::string key)
-{
-    return _data[key];   
-}
-
 std::ifstream Ontology::OpenFile(std::string path)
 {
     std::ifstream reader;
@@ -164,14 +148,8 @@ std::ifstream Ontology::OpenFile(std::string path)
     return reader;
 }
 
-std::string Ontology::DetermineDelimited(Type delimiterType)
+std::string Ontology::GetData(std::string goAccession)
 {
-    switch (delimiterType)
-    {
-    case TAB_DELINEATED:
-        return"\t";
-    case COMMA_DELINEATED:
-        return ",";
-    }
-    return "";
+    GoInfo info = _goInformation[goAccession];
+    return info.goSection +"  " + info.termidId;
 }

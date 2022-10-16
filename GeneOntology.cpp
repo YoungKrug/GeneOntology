@@ -5,14 +5,14 @@
 #include "Ontology.h" // non gene of interest, 1 is gene of interest
 int main()
 {
-    Ontology ontology;
-    //ontology.ReadOncologyDataBase("flatfiles/GO_annot.txt", Ontology::TAB_DELINEATED);
-   
-    ontology.ReadDefinitions("flatfiles/GO_definitions.txt", Ontology::TAB_DELINEATED);
-    ontology.ReadChildren("flatfiles/GO_tree_child.txt", Ontology::COMMA_DELINEATED);
-    ontology.ReadParents("flatfiles/GO_tree_parent.txt", Ontology::COMMA_DELINEATED);
-    ontology.ReadGenes("flatfiles/GO_ncbi_assoc_200507.txt", Ontology::COMMA_DELINEATED);
-    Ontology::OntologyNode node = ontology.GetData("13666");
+     Ontology ontology;
+     ontology.ReadFile("flatfiles/GO_definitions.txt", Ontology::TAB_DELINEATED, Ontology::DEFINITIONS);
+     ontology.ReadFile("flatfiles/GO_tree_child.txt", Ontology::COMMA_DELINEATED, Ontology::CHILDS);
+     ontology.ReadFile("flatfiles/GO_tree_parent.txt", Ontology::COMMA_DELINEATED, Ontology::PARENTS);
+     ontology.ReadFile("flatfiles/GO_ncbi_assoc_200507.txt", Ontology::COMMA_DELINEATED, Ontology::GENES);
+     ontology.ReadFile("flatfiles/GO_annot.txt", Ontology::TAB_DELINEATED, Ontology::GOACCESSION);
+     std:: string str = ontology.GetData("GO:0016837");
+     std::cout << str;
     
 }
 

@@ -2,32 +2,32 @@
 #include <string>
 #include <fstream>
 #include <unordered_map>
+#include "DataBaseTypes.h"
+using namespace DataTypes;
 
 class Ontology
 {
 public:
-    enum Type
+    enum DelimiterType
     {
         TAB_DELINEATED,
         COMMA_DELINEATED
     };
-    struct OntologyNode
+    enum FileType
     {
-        std::vector<std::string> children;
-        std::vector<std::string> parent;
-        std::vector<std::string> otherInformation;
-        std::vector<std::string> genes;
+        PARENTS,
+        CHILDS,
+        DEFINITIONS,
+        GOACCESSION,
+        GENES,
+        GOIORNGOI
     };
-    void ReadOncologyDataBase(std::string, Type);
-    void ReadGenes(std::string, Type);
-    void ReadChildren(std::string, Type);
-    void ReadParents(std::string, Type);
-    void ReadDefinitions(std::string, Type);
-    OntologyNode GetData(std::string);
+    void ReadFile(std::string, DelimiterType, FileType);
+    void AddToDBBasedOnType(FileType, std::string, std::string);
+    std::string DetermineDelimited(DelimiterType);
     std::ifstream OpenFile(std::string);
-    std::string DetermineDelimited(Type);
-  
+    std::string GetData(std::string);
 private:
-    std::unordered_map<std::string, OntologyNode> _data;
-    std::unordered_map<std::string,std::unordered_map<std::string, std::vector<std::string>>> _goData;
+    std::unordered_map<std::string, GoInfo> _goInformation;
+    std::unordered_map<std::string, TermidInfo> _termidInfo;
 };
