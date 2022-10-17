@@ -26,7 +26,7 @@ public:
     void AddToDBBasedOnType(FileType, std::string, std::string);
     std::string DetermineDelimited(DelimiterType);
     std::ifstream OpenFile(std::string);
-    std::string GetData(std::string);
+    void DisplayValue(std::string);
 private:
     std::unordered_map<std::string, GoInfo> _goInformation;
     std::unordered_map<std::string, TermidInfo> _termidInfo;

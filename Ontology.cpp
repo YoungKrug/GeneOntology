@@ -38,6 +38,7 @@ void Ontology::AddToDBBasedOnType(FileType fileType, std::string line, std::stri
                     {
                         _termidInfo.insert({key, info});
                     }
+                    _termidInfo[key].termidId = key;
                 }
                 else
                 {
@@ -52,6 +53,7 @@ void Ontology::AddToDBBasedOnType(FileType fileType, std::string line, std::stri
                 {
                     _termidInfo.insert({key, info});
                 }
+                _termidInfo[key].termidId = key;
             }
             else
             {
@@ -66,6 +68,7 @@ void Ontology::AddToDBBasedOnType(FileType fileType, std::string line, std::stri
                     {
                         _termidInfo.insert({key, info});
                     }
+                    _termidInfo[key].termidId = key;
                 }
             else
             {
@@ -101,6 +104,7 @@ void Ontology::AddToDBBasedOnType(FileType fileType, std::string line, std::stri
                 if(i == 0) // the first key is the termid
                 {
                     key = currentString; // key is gene
+                    _termidInfo[currentString].termidId = currentString;
                 }
                 else
                 {
@@ -142,14 +146,16 @@ std::ifstream Ontology::OpenFile(std::string path)
     reader.open(path);
     while(!reader.is_open())
     {
+        std::cout <<"Enter a new path" << std::endl;
         std::cin >> path;
         reader.open(path);
     }
     return reader;
 }
 
-std::string Ontology::GetData(std::string goAccession)
+void Ontology::DisplayValue(std::string goAccession)
 {
     GoInfo info = _goInformation[goAccession];
-    return info.goSection +"  " + info.termidId;
+    info.Print();
+    _termidInfo[info.termidId].Print();
 }

@@ -2,18 +2,28 @@
 //
 
 #include <iostream>
+#include <string>
 #include "Ontology.h" // non gene of interest, 1 is gene of interest
 int main()
 {
      Ontology ontology;
-     ontology.ReadFile("flatfiles/GO_definitions.txt", Ontology::TAB_DELINEATED, Ontology::DEFINITIONS);
+     ontology.ReadFile("flatfiles/GO_efinitions.txt", Ontology::TAB_DELINEATED, Ontology::DEFINITIONS);
      ontology.ReadFile("flatfiles/GO_tree_child.txt", Ontology::COMMA_DELINEATED, Ontology::CHILDS);
      ontology.ReadFile("flatfiles/GO_tree_parent.txt", Ontology::COMMA_DELINEATED, Ontology::PARENTS);
      ontology.ReadFile("flatfiles/GO_ncbi_assoc_200507.txt", Ontology::COMMA_DELINEATED, Ontology::GENES);
      ontology.ReadFile("flatfiles/GO_annot.txt", Ontology::TAB_DELINEATED, Ontology::GOACCESSION);
-     std:: string str = ontology.GetData("GO:0016837");
-     std::cout << str;
-    
+     ontology.ReadFile("flatfiles/analyze_me_unique.txt", Ontology::TAB_DELINEATED, Ontology::GOIORNGOI);
+     std::string input;
+     std::cout << "Please enter a Go Accession Number for lookup" << std::endl;
+     while(input != "n")
+     {
+         if(input == "n")
+             break;
+          std::cin >> input;
+          ontology.DisplayValue(input);
+          std::cout << "Enter another GO AccessionNumber or enter 'n' to exit" << std::endl;
+     }
+    return 0;
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
