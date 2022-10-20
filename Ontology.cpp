@@ -146,7 +146,7 @@ std::ifstream Ontology::OpenFile(std::string path)
     reader.open(path);
     while(!reader.is_open())
     {
-        std::cout <<"Enter a new path" << std::endl;
+        std::cout <<"Please re-enter your path" << std::endl;
         std::cin >> path;
         reader.open(path);
     }
