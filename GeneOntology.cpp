@@ -8,37 +8,28 @@ int main()
 {
 	Ontology ontology;
 	std::string path;
-	std::cout << "Please enter the path for you go_definitions";
-	std::cin >> path;
-	ontology.ReadFile(path, Ontology::TAB_DELINEATED, Ontology::DEFINITIONS);
-	std::cout << "Please enter the path for you go_tree_children";
-	std::cin >> path;
-	ontology.ReadFile(path, Ontology::COMMA_DELINEATED, Ontology::CHILDS);
-	
-	std::cout << "Please enter the path for you go_tree_parents";
-	std::cin >> path;
-	ontology.ReadFile(path, Ontology::COMMA_DELINEATED, Ontology::PARENTS);
-	
-	std::cout << "Please enter the path for you go_associations";
-	std::cin >> path;
-	ontology.ReadFile(path, Ontology::COMMA_DELINEATED, Ontology::GENES);
-	
-	std::cout << "Please enter the path for you go_genes";
-	std::cin >> path;
-	ontology.ReadFile(path, Ontology::TAB_DELINEATED, Ontology::GOACCESSION);
-	
-	std::cout << "Please enter the path for you GOI file";
-	std::cin >> path;
-	ontology.ReadFile(path, Ontology::TAB_DELINEATED, Ontology::GOIORNGOI);
 	std::string input;
-	std::cout << "Please enter a Go Accession Number for lookup" << std::endl;
+	std::cout << "Please enter your primary gene Annot file\n";
+	std::cin >> path;
+	ontology.ReadFile(path);
+	while(input != "n")
+	{
+		std::cout << "Please enter for file... (n to exit)"<< std::endl;
+		std::string temp;
+		std::cin >> temp;
+		if(std::toupper(temp[0]) == 'N')
+		{
+			break;
+		}
+		path = temp;
+		ontology.ReadFile(path);
+	}
+	input = "";
 	while (input != "n")
 	{
-		if (input == "n")
-			break;
+		std::cout << "Enter another GO AccessionNumber or enter 'n' to exit" << std::endl;
 		std::cin >> input;
 		ontology.DisplayValue(input);
-		std::cout << "Enter another GO AccessionNumber or enter 'n' to exit" << std::endl;
 	}
 	return 0;
 }

@@ -22,7 +22,7 @@ public:
         GENES,
         GOIORNGOI
     };
-    void ReadFile(std::string, DelimiterType, FileType);
+    void ReadFile(std::string);
     void AddToDBBasedOnType(FileType, std::string, std::string);
     std::string DetermineDelimited(DelimiterType);
     std::ifstream OpenFile(std::string);
@@ -30,4 +30,8 @@ public:
 private:
     std::unordered_map<std::string, GoInfo> _goInformation;
     std::unordered_map<std::string, TermidInfo> _termidInfo;
+  //  std::vector<std::string> _fileTypeStrings = {"P", "C", "D", "A", "G", "N"};
+  //  std::vector<std::string> _demlimiterTypeStrings = {"T", "C"};
+    std::unordered_map<std::string, FileType> _fileTypeStrings ={ {"P", PARENTS},{"C", CHILDS},{"D", DEFINITIONS},{"A", GOACCESSION},{"G", GENES},{"N", GOIORNGOI} };
+    std::unordered_map<std::string, DelimiterType> _demlimiterTypeStrings ={ {"C", COMMA_DELINEATED},{"T", TAB_DELINEATED}};
 };

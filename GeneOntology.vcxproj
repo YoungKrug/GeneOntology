@@ -143,9 +143,11 @@
     <ClCompile Include="Ontology.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DataBaseTypes.h" />
     <ClInclude Include="Ontology.h" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="flatfiles\analyze_me_unique.txt" />
     <Content Include="flatfiles\GO_annot.txt" />
     <Content Include="flatfiles\GO_assoc.txt" />
     <Content Include="flatfiles\GO_definitions.txt" />

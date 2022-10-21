@@ -3,15 +3,31 @@
 #include <iostream>
 #include <regex>
 
-void Ontology::ReadFile(std::string filePath, DelimiterType delimiterType, FileType fileType)
+void Ontology::ReadFile(std::string filePath)
 {
     std::ifstream reader;
     std::string line;
-    std::string delimiter = DetermineDelimited(delimiterType);
+    std::string demlimiter;
+    std::string fileEnum;
+    std::cout << _demlimiterTypeStrings.size() <<std::endl;
+    while(_demlimiterTypeStrings.find(demlimiter) == _demlimiterTypeStrings.end())
+    {
+        std::cout << "Please enter a 't' for tab delimiters or a 'c' for comma delimiters" << std::endl;
+        std::cin >> demlimiter;
+        demlimiter = std::string(1,toupper(demlimiter[0]));
+    }
+    while(_fileTypeStrings.find(fileEnum) == _fileTypeStrings.end())
+    {
+        std::cout << "Please enter 'P' for parent files, 'C' for children files, 'D' for definitions\n"
+        << "'A' for Go Associations, 'G' for genes, and 'N' for Genes of interest" << std::endl;
+        std::cin >> fileEnum;
+        fileEnum = std::string(1,toupper(fileEnum[0]));
+    }
+    std::string delimiter = DetermineDelimited(_demlimiterTypeStrings[demlimiter]);
     reader = OpenFile(filePath);
     while(std::getline(reader, line))
     {
-        AddToDBBasedOnType(fileType, line, delimiter);
+        AddToDBBasedOnType(_fileTypeStrings[fileEnum], line, delimiter);
     }
 }
 void Ontology::AddToDBBasedOnType(FileType fileType, std::string line, std::string delimiter)
@@ -80,6 +96,10 @@ void Ontology::AddToDBBasedOnType(FileType fileType, std::string line, std::stri
                 {
                     //termid Id
                     key = currentString;
+                    if(_termidInfo.find(key) == _termidInfo.end()) // which means key is
+                    {
+                        _termidInfo.insert({key, info});
+                    }
                 }
                 else if(i == 1)
                 {
@@ -87,6 +107,7 @@ void Ontology::AddToDBBasedOnType(FileType fileType, std::string line, std::stri
                     {
                         _goInformation.insert({currentString, goInfo});
                     }
+                
                     _goInformation[currentString].termidId = key;
                     key = currentString;
                 }
