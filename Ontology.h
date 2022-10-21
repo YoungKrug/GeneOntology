@@ -34,4 +34,5 @@ private:
   //  std::vector<std::string> _demlimiterTypeStrings = {"T", "C"};
     std::unordered_map<std::string, FileType> _fileTypeStrings ={ {"P", PARENTS},{"C", CHILDS},{"D", DEFINITIONS},{"A", GOACCESSION},{"G", GENES},{"N", GOIORNGOI} };
     std::unordered_map<std::string, DelimiterType> _demlimiterTypeStrings ={ {"C", COMMA_DELINEATED},{"T", TAB_DELINEATED}};
+    std::unordered_map<std::string, bool> _genesOfIntersts;
 };

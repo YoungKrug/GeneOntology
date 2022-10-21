@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string.h>
 #include <vector>
+#include <unordered_map>
 namespace DataTypes
 {
 	struct GoInfo
@@ -23,25 +24,41 @@ namespace DataTypes
 		std::vector<std::string> geneId;
 		std::string definition;
 		bool isGOI = false;
-		void Print()
+		void Print(std::unordered_map<std::string ,TermidInfo> _info, std::unordered_map<std::string, bool> _genesOfInterest)
 		{
-			std::string children;
-			std::string parents;
-			std::string genes;
+			int GOIs = 0;
+			int nGOIs = 0;
 			for(auto i : childtermidId)
 			{
-				children.append(i + " : ");
-			}
-			for(auto i : parentTermidId)
-			{
-				parents.append(i + " : ");
+				for(auto genes :_info[i].geneId)
+				{
+					// if(_genesOfInterest.find(genes) == _genesOfInterest.end())
+					// 	continue;
+					if(_genesOfInterest[genes])
+					{
+						GOIs++;
+					}
+					else
+					{
+						nGOIs++;
+					}
+				}
 			}
 			for(auto i : geneId)
 			{
-				genes.append(i + " : ");
+				if(_genesOfInterest.find(i) == _genesOfInterest.end())
+					continue;
+				if(_genesOfInterest[i])
+				{
+					GOIs++;
+				}
+				else
+				{
+					nGOIs++;
+				}
 			}
-			std::cout << "TermidID: " << termidId << "\nChildren: " << children << "\n Parents: "
-			<< parents << "\nGenes: " << genes << "\nisGOI: " << isGOI << std::endl;
+			std::cout << "TermidID: " << termidId << "\nChildren: " << childtermidId.size() <<
+				"\nGOIs: " << GOIs << "\nNGOIs: " << nGOIs << std::endl;
 		}
 	};
 

@@ -96,14 +96,14 @@ void Ontology::AddToDBBasedOnType(FileType fileType, std::string line, std::stri
                 {
                     //termid Id
                     key = currentString;
-                    if(_termidInfo.find(key) == _termidInfo.end()) // which means key is
+                    if(_termidInfo.find(key) == _termidInfo.end()) // which means key is not there
                     {
                         _termidInfo.insert({key, info});
                     }
                 }
                 else if(i == 1)
                 {
-                    if(_goInformation.find(currentString) == _goInformation.end()) // which means key is
+                    if(_goInformation.find(currentString) == _goInformation.end()) // which means key is not there
                     {
                         _goInformation.insert({currentString, goInfo});
                     }
@@ -140,7 +140,8 @@ void Ontology::AddToDBBasedOnType(FileType fileType, std::string line, std::stri
             else
             {
                 int num = std::stoi(currentString);
-                _termidInfo[key].isGOI = (bool)num;
+                _genesOfIntersts.insert({key, (bool)num});
+                //_termidInfo[key].isGOI = (bool)num;
             }
                 
             break;
@@ -178,5 +179,5 @@ void Ontology::DisplayValue(std::string goAccession)
 {
     GoInfo info = _goInformation[goAccession];
     info.Print();
-    _termidInfo[info.termidId].Print();
+    _termidInfo[info.termidId].Print(_termidInfo, _genesOfIntersts);
 }
