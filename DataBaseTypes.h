@@ -32,8 +32,8 @@ namespace DataTypes
 			{
 				for(auto genes :_info[i].geneId)
 				{
-					// if(_genesOfInterest.find(genes) == _genesOfInterest.end())
-					// 	continue;
+					 if(_genesOfInterest.find(genes) == _genesOfInterest.end())
+					 	continue;
 					if(_genesOfInterest[genes])
 					{
 						GOIs++;
