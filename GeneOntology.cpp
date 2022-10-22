@@ -7,6 +7,7 @@
 int main()
 {
 	Ontology ontology;
+	std::cout << ontology.HyperGeometricDistrubition(1000, 3, 10, 400);
 	std::string path;
 	std::string input;
 	std::cout << "Please enter your primary gene Annot file\n";

@@ -30,6 +30,14 @@ public:
     std::ifstream OpenFile(std::string);
     void DisplayValue(std::string);
     double Combination(int,int);
+    /**
+     * \brief
+     * Population
+     * SuccessInPop
+     * sampleSize
+     * initialPopulation
+     * \return 
+     */
     double HyperGeometricDistrubition(int,int,int,int);
     double Factorial(int);
 private:

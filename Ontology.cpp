@@ -190,16 +190,28 @@ void Ontology::DisplayValue(std::string goAccession)
 
 double Ontology::Combination(int n, int r)
 {
-    double factorialOfN = Factorial(n);
+
+    double factorialOfN = n;
+    for (int i = n - 1; i > n - r; i--)
+    {
+        factorialOfN *= i;
+    }
     double factorialOfR = Factorial(r);
-    double factorialOfNR = Factorial(n - r);
-    return (factorialOfN)/(factorialOfR * factorialOfNR);
+    return (factorialOfN)/(factorialOfR);
 }
 
-double Ontology::HyperGeometricDistrubition(int population, int successInInitialPopulation, int sampleSize, int sampledPopulation)
+/**
+ * \brief 
+ * \param population
+ * \param successInInitialPopulation 
+ * \param sampleSize 
+ * \param initialPopulation 
+ * \return 
+ */
+double Ontology::HyperGeometricDistrubition(int population, int successInInitialPopulation, int sampleSize, int initialPopulation)
 {
-    int otherPop = population - sampledPopulation;
-    double probOfInitial = Combination(sampledPopulation, successInInitialPopulation);
+    int otherPop = population - initialPopulation;
+    double probOfInitial = Combination(initialPopulation, successInInitialPopulation);
     double probOfOther = Combination(otherPop, sampleSize - successInInitialPopulation);
     double probOfPopulation = Combination(population, sampleSize);
     return (probOfInitial * probOfOther)/probOfPopulation;
