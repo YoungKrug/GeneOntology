@@ -3,31 +3,37 @@
 #include <iostream>
 #include <regex>
 
-void Ontology::ReadFile(std::string filePath)
+void Ontology::ReadFile(std::string filePath, DelimiterType dType, FileType fType)
 {
     std::ifstream reader;
     std::string line;
-    std::string demlimiter;
-    std::string fileEnum;
-    std::cout << _demlimiterTypeStrings.size() <<std::endl;
-    while(_demlimiterTypeStrings.find(demlimiter) == _demlimiterTypeStrings.end())
+    std::string demlimiter = "";
+    std::string fileEnum = "";
+    if (dType == NONE)
     {
-        std::cout << "Please enter a 't' for tab delimiters or a 'c' for comma delimiters" << std::endl;
-        std::cin >> demlimiter;
-        demlimiter = std::string(1,toupper(demlimiter[0]));
+        while (_demlimiterTypeStrings.find(demlimiter) == _demlimiterTypeStrings.end())
+        {
+            std::cout << "Please enter a 't' for tab delimiters or a 'c' for comma delimiters" << std::endl;
+            std::cin >> demlimiter;
+            demlimiter = std::string(1, toupper(demlimiter[0]));
+        }
     }
-    while(_fileTypeStrings.find(fileEnum) == _fileTypeStrings.end())
+    if (fType == NO)
     {
-        std::cout << "Please enter 'P' for parent files, 'C' for children files, 'D' for definitions\n"
-        << "'A' for Go Associations, 'G' for genes, and 'N' for Genes of interest" << std::endl;
-        std::cin >> fileEnum;
-        fileEnum = std::string(1,toupper(fileEnum[0]));
+        while (_fileTypeStrings.find(fileEnum) == _fileTypeStrings.end())
+        {
+            std::cout << "Please enter 'P' for parent files, 'C' for children files, 'D' for definitions\n"
+                << "'A' for Go Associations, 'G' for genes, and 'N' for Genes of interest" << std::endl;
+            std::cin >> fileEnum;
+            fileEnum = std::string(1, toupper(fileEnum[0]));
+        }
     }
-    std::string delimiter = DetermineDelimited(_demlimiterTypeStrings[demlimiter]);
+    std::string finalDelimiter = demlimiter == "" ? DetermineDelimited(dType) : DetermineDelimited(_demlimiterTypeStrings[demlimiter]);
+    FileType finalFileType = fileEnum == "" ? fType : _fileTypeStrings[fileEnum];
     reader = OpenFile(filePath);
     while(std::getline(reader, line))
     {
-        AddToDBBasedOnType(_fileTypeStrings[fileEnum], line, delimiter);
+        AddToDBBasedOnType(finalFileType, line, finalDelimiter);
     }
 }
 void Ontology::AddToDBBasedOnType(FileType fileType, std::string line, std::string delimiter)
@@ -180,4 +186,28 @@ void Ontology::DisplayValue(std::string goAccession)
     GoInfo info = _goInformation[goAccession];
     info.Print();
     _termidInfo[info.termidId].Print(_termidInfo, _genesOfIntersts);
+}
+
+double Ontology::Combination(int n, int r)
+{
+    double factorialOfN = Factorial(n);
+    double factorialOfR = Factorial(r);
+    double factorialOfNR = Factorial(n - r);
+    return (factorialOfN)/(factorialOfR * factorialOfNR);
+}
+
+double Ontology::HyperGeometricDistrubition(int population, int successInInitialPopulation, int sampleSize, int sampledPopulation)
+{
+    int otherPop = population - sampledPopulation;
+    double probOfInitial = Combination(sampledPopulation, successInInitialPopulation);
+    double probOfOther = Combination(otherPop, sampleSize - successInInitialPopulation);
+    double probOfPopulation = Combination(population, sampleSize);
+    return (probOfInitial * probOfOther)/probOfPopulation;
+}
+
+double Ontology::Factorial(int x)
+{
+    if(x == 0)
+        return 1;
+    return x * Factorial(x - 1);
 }

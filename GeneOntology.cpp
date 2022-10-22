@@ -11,8 +11,28 @@ int main()
 	std::string input;
 	std::cout << "Please enter your primary gene Annot file\n";
 	std::cin >> path;
-	ontology.ReadFile(path);
-	while(input != "n")
+	ontology.ReadFile(path, Ontology::TAB_DELINEATED, Ontology::GOACCESSION);
+	std::cout << "Please enter the path for you go_definitions\n";
+	std::cin >> path;
+	ontology.ReadFile(path, Ontology::TAB_DELINEATED, Ontology::DEFINITIONS);
+	std::cout << "Please enter the path for you go_tree_children\n";
+	std::cin >> path;
+	ontology.ReadFile(path, Ontology::COMMA_DELINEATED, Ontology::CHILDS);
+
+	std::cout << "Please enter the path for you go_tree_parents\n";
+	std::cin >> path;
+	ontology.ReadFile(path, Ontology::COMMA_DELINEATED, Ontology::PARENTS);
+
+	std::cout << "Please enter the path for you go_genes\n";
+	std::cin >> path;
+	ontology.ReadFile(path, Ontology::COMMA_DELINEATED, Ontology::GENES);
+
+
+	std::cout << "Please enter the path for you GOI file\n";
+	std::cin >> path;
+	ontology.ReadFile(path, Ontology::TAB_DELINEATED, Ontology::GOIORNGOI);
+
+	/*while(input != "n")
 	{
 		std::cout << "Please enter for file... (n to exit)"<< std::endl;
 		std::string temp;
@@ -23,7 +43,7 @@ int main()
 		}
 		path = temp;
 		ontology.ReadFile(path);
-	}
+	}*/
 	input = "";
 	while (input != "n")
 	{

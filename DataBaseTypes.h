@@ -28,8 +28,10 @@ namespace DataTypes
 		{
 			int GOIs = 0;
 			int nGOIs = 0;
+			int totalGenes = 0;
 			for(auto i : childtermidId)
 			{
+				totalGenes += (int)_info[i].geneId.size();
 				for(auto genes :_info[i].geneId)
 				{
 					 if(_genesOfInterest.find(genes) == _genesOfInterest.end())
@@ -57,8 +59,10 @@ namespace DataTypes
 					nGOIs++;
 				}
 			}
+			totalGenes += (int)geneId.size();
 			std::cout << "TermidID: " << termidId << "\nChildren: " << childtermidId.size() <<
-				"\nGOIs: " << GOIs << "\nNGOIs: " << nGOIs << std::endl;
+				"\nGOIs: " << GOIs << "\nNGOIs: " << nGOIs << 
+				"\nNumber of Genes: " << totalGenes <<std::endl;
 		}
 	};
 

@@ -11,7 +11,8 @@ public:
     enum DelimiterType
     {
         TAB_DELINEATED,
-        COMMA_DELINEATED
+        COMMA_DELINEATED,
+        NONE
     };
     enum FileType
     {
@@ -20,13 +21,17 @@ public:
         DEFINITIONS,
         GOACCESSION,
         GENES,
-        GOIORNGOI
+        GOIORNGOI,
+        NO
     };
-    void ReadFile(std::string);
+    void ReadFile(std::string, DelimiterType dType = DelimiterType::NONE, FileType fType = FileType::NO);
     void AddToDBBasedOnType(FileType, std::string, std::string);
     std::string DetermineDelimited(DelimiterType);
     std::ifstream OpenFile(std::string);
     void DisplayValue(std::string);
+    double Combination(int,int);
+    double HyperGeometricDistrubition(int,int,int,int);
+    double Factorial(int);
 private:
     std::unordered_map<std::string, GoInfo> _goInformation;
     std::unordered_map<std::string, TermidInfo> _termidInfo;
