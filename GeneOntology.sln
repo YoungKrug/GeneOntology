@@ -7,8 +7,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GeneOntology", "GeneOntolog
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OntologyTest", "..\OntologyTest\OntologyTest.vcxproj", "{8CA4DF17-867C-4D1B-A3E0-0F811401BF40}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OntologyTest", "OntologyTest\OntologyTest.vcxproj", "{8CA4DF17-867C-4D1B-A3E0-0F811401BF40}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
