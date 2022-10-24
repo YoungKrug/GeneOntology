@@ -7,7 +7,6 @@
 int main()
 {
 	Ontology ontology;
-	std::cout << ontology.HyperGeometricDistrubition(1000, 3, 10, 400);
 	std::string path;
 	std::string input;
 	std::cout << "Please enter your primary gene Annot file\n";
@@ -32,7 +31,7 @@ int main()
 	std::cout << "Please enter the path for you GOI file\n";
 	std::cin >> path;
 	ontology.ReadFile(path, Ontology::TAB_DELINEATED, Ontology::GOIORNGOI);
-
+	ontology.CalculateTermidInformationForTest();
 	/*while(input != "n")
 	{
 		std::cout << "Please enter for file... (n to exit)"<< std::endl;
@@ -45,13 +44,13 @@ int main()
 		path = temp;
 		ontology.ReadFile(path);
 	}*/
-	input = "";
-	while (input != "n")
-	{
-		std::cout << "Enter another GO AccessionNumber or enter 'n' to exit" << std::endl;
-		std::cin >> input;
-		ontology.DisplayValue(input);
-	}
+	// input = "";
+	// while (input != "n")
+	// {
+	// 	std::cout << "Enter another GO AccessionNumber or enter 'n' to exit" << std::endl;
+	// 	std::cin >> input;
+	// 	ontology.DisplayValue(input);
+	// }
 	return 0;
 }
 

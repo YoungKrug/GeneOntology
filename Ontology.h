@@ -28,6 +28,7 @@ public:
     void AddToDBBasedOnType(FileType, std::string, std::string);
     std::string DetermineDelimited(DelimiterType);
     std::ifstream OpenFile(std::string);
+    void CalculateTermidInformationForTest();
     void DisplayValue(std::string);
     double Combination(int,int);
     /**
@@ -38,7 +39,7 @@ public:
      * initialPopulation
      * \return 
      */
-    double HyperGeometricDistrubition(int,int,int,int);
+    double HyperGeometricDistrubition(double,double,double,double);
     double Factorial(int);
 private:
     std::unordered_map<std::string, GoInfo> _goInformation;
@@ -48,4 +49,5 @@ private:
     std::unordered_map<std::string, FileType> _fileTypeStrings ={ {"P", PARENTS},{"C", CHILDS},{"D", DEFINITIONS},{"A", GOACCESSION},{"G", GENES},{"N", GOIORNGOI} };
     std::unordered_map<std::string, DelimiterType> _demlimiterTypeStrings ={ {"C", COMMA_DELINEATED},{"T", TAB_DELINEATED}};
     std::unordered_map<std::string, bool> _genesOfIntersts;
+    double _totalNumberOfGenes = 0;
 };

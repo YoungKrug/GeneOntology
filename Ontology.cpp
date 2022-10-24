@@ -132,6 +132,7 @@ void Ontology::AddToDBBasedOnType(FileType fileType, std::string line, std::stri
                 {
                     key = currentString; // key is gene
                     _termidInfo[currentString].termidId = currentString;
+                    _totalNumberOfGenes++;
                 }
                 else
                 {
@@ -181,6 +182,51 @@ std::ifstream Ontology::OpenFile(std::string path)
     return reader;
 }
 
+void Ontology::CalculateTermidInformationForTest()
+{
+  
+    for(auto i : _termidInfo)
+    {
+        double NGOI_GOI = 0;
+        double genesAssociatedWithTerm = 0;
+        double genesNot_GOI_NGOI = 0;
+        for(auto genes : i.second.geneId)
+        {
+            if(_genesOfIntersts.find(genes) != _genesOfIntersts.end())
+            {
+                NGOI_GOI++;
+            }
+            else
+            {
+                genesNot_GOI_NGOI++;
+            }
+            genesAssociatedWithTerm++;
+        }
+        for(auto children : i.second.childtermidId)
+        {
+            TermidInfo temp = _termidInfo[children];
+            for(auto genes : temp.geneId)
+            {
+                if(_genesOfIntersts.find(genes) != _genesOfIntersts.end())
+                {
+                    NGOI_GOI++;
+                }
+                else
+                {
+                    genesNot_GOI_NGOI++;
+                }
+                genesAssociatedWithTerm++;
+            }
+        }
+        if(NGOI_GOI <= 0)
+            continue;
+        double val = HyperGeometricDistrubition(_totalNumberOfGenes, NGOI_GOI,
+            NGOI_GOI + genesNot_GOI_NGOI, genesAssociatedWithTerm);
+        std::cout << val << std::endl;
+        
+    }
+}
+
 void Ontology::DisplayValue(std::string goAccession)
 {
     GoInfo info = _goInformation[goAccession];
@@ -196,6 +242,8 @@ double Ontology::Combination(int n, int r)
     {
         factorialOfN *= i;
     }
+    if(r > 500)
+        return 0;
     double factorialOfR = Factorial(r);
     return (factorialOfN)/(factorialOfR);
 }
@@ -208,7 +256,7 @@ double Ontology::Combination(int n, int r)
  * \param initialPopulation 
  * \return 
  */
-double Ontology::HyperGeometricDistrubition(int population, int successInInitialPopulation, int sampleSize, int initialPopulation)
+double Ontology::HyperGeometricDistrubition(double population, double successInInitialPopulation, double sampleSize, double initialPopulation)
 {
     int otherPop = population - initialPopulation;
     double probOfInitial = Combination(initialPopulation, successInInitialPopulation);
