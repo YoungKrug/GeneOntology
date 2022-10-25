@@ -115,6 +115,7 @@ void Ontology::AddToDBBasedOnType(FileType fileType, std::string line, std::stri
                     }
                 
                     _goInformation[currentString].termidId = key;
+                    _termidInfo[key].goAccession = currentString;
                     key = currentString;
                 }
                 else if(i == 2)
@@ -184,7 +185,9 @@ std::ifstream Ontology::OpenFile(std::string path)
 
 void Ontology::CalculateTermidInformationForTest()
 {
-  
+    double p_value = ((double)_genesOfIntersts.size()/3.5)/_totalNumberOfGenes;
+    std::cout <<"P-Value: " << p_value << std::endl;
+    std::cout <<"Below are the significant values in the Ontology: \n";
     for(auto i : _termidInfo)
     {
         double NGOI_GOI = 0;
@@ -220,11 +223,13 @@ void Ontology::CalculateTermidInformationForTest()
         }
         if(NGOI_GOI <= 0)
             continue;
+      
         double val = HyperGeometricDistrubition(_totalNumberOfGenes, NGOI_GOI,
             NGOI_GOI + genesNot_GOI_NGOI, genesAssociatedWithTerm);
-        std::cout << val << std::endl;
-        
+        if(val > p_value)
+            std::cout << "Go Accession: " << i.second.goAccession << "  Value: " << val << std::endl;
     }
+    
 }
 
 void Ontology::DisplayValue(std::string goAccession)

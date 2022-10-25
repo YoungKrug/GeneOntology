@@ -31,6 +31,7 @@ public:
     void CalculateTermidInformationForTest();
     void DisplayValue(std::string);
     double Combination(int,int);
+    double ChiSquaredTest(double);
     /**
      * \brief
      * Population
@@ -39,8 +40,8 @@ public:
      * initialPopulation
      * \return 
      */
-    double HyperGeometricDistrubition(double,double,double,double);
-    double Factorial(int);
+    double HyperGeometricDistrubition(double,double,double,double);//is our pvalue the number of genes of interest divided by the number of
+    double Factorial(int); //termids? The significants of a gene being significant in this context?
 private:
     std::unordered_map<std::string, GoInfo> _goInformation;
     std::unordered_map<std::string, TermidInfo> _termidInfo;
