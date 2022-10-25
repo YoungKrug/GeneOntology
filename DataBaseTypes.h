@@ -23,6 +23,7 @@ namespace DataTypes
 		std::vector<std::string> parentTermidId;
 		std::vector<std::string> geneId;
 		std::string definition;
+		std::string goAccession;
 		bool isGOI = false;
 		void Print(std::unordered_map<std::string ,TermidInfo> _info, std::unordered_map<std::string, bool> _genesOfInterest)
 		{

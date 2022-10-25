@@ -28,8 +28,10 @@ public:
     void AddToDBBasedOnType(FileType, std::string, std::string);
     std::string DetermineDelimited(DelimiterType);
     std::ifstream OpenFile(std::string);
+    void CalculateTermidInformationForTest();
     void DisplayValue(std::string);
     double Combination(int,int);
+    double ChiSquaredTest(double);
     /**
      * \brief
      * Population
@@ -38,8 +40,8 @@ public:
      * initialPopulation
      * \return 
      */
-    double HyperGeometricDistrubition(int,int,int,int);
-    double Factorial(int);
+    double HyperGeometricDistrubition(double,double,double,double);//is our pvalue the number of genes of interest divided by the number of
+    double Factorial(int); //termids? The significants of a gene being significant in this context?
 private:
     std::unordered_map<std::string, GoInfo> _goInformation;
     std::unordered_map<std::string, TermidInfo> _termidInfo;
@@ -48,4 +50,5 @@ private:
     std::unordered_map<std::string, FileType> _fileTypeStrings ={ {"P", PARENTS},{"C", CHILDS},{"D", DEFINITIONS},{"A", GOACCESSION},{"G", GENES},{"N", GOIORNGOI} };
     std::unordered_map<std::string, DelimiterType> _demlimiterTypeStrings ={ {"C", COMMA_DELINEATED},{"T", TAB_DELINEATED}};
     std::unordered_map<std::string, bool> _genesOfIntersts;
+    double _totalNumberOfGenes = 0;
 };
