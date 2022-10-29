@@ -1,5 +1,6 @@
 ﻿#include "Ontology.h"
 
+#include <chrono>
 #include <iostream>
 #include <regex>
 
@@ -149,6 +150,8 @@ void Ontology::AddToDBBasedOnType(FileType fileType, std::string line, std::stri
             {
                 int num = std::stoi(currentString);
                 _genesOfIntersts.insert({key, (bool)num});
+                if((bool)num)
+                    _GOIS.emplace_back(key);
                 //_termidInfo[key].isGOI = (bool)num;
             }
                 
@@ -251,6 +254,27 @@ double Ontology::Combination(int n, int r)
         return 0;
     double factorialOfR = Factorial(r);
     return (factorialOfN)/(factorialOfR);
+}
+
+std::vector<std::string> Ontology::GenerateRandomGenes()
+{
+    std::vector<std::string> genes;
+   int count = 100;
+    std::mt19937 generator (std::chrono::system_clock::now().time_since_epoch().count());
+    std::uniform_real_distribution<int> dis(0, _genesOfIntersts.size());
+    for(auto i : _GOIS)
+    {
+        _genesOfIntersts[i] = false;
+    }
+    _GOIS.clear();
+    for(int i = 0; i < count; i++)
+    {
+        int ranNum = dis(generator);
+        auto val = std::unordered_map<std::string, bool>::iterator{_genesOfIntersts.begin()};
+        std::advance(val, ranNum);
+        val->second = true;
+        _GOIS.emplace_back(val->first);
+    }
 }
 
 /**
