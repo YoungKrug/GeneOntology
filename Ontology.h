@@ -33,7 +33,7 @@ public:
     void DisplayValue(std::string);
     double Combination(int,int);
     double ChiSquaredTest(double);
-    std::vector<std::string> GenerateRandomGenes();
+    void GenerateRandomGenes();
     /**
      * \brief
      * Population

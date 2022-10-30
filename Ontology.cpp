@@ -200,7 +200,8 @@ void Ontology::CalculateTermidInformationForTest()
         {
             if(_genesOfIntersts.find(genes) != _genesOfIntersts.end())
             {
-                NGOI_GOI++;
+                //if(_genesOfIntersts[genes])
+                    NGOI_GOI++; //Only GOI
             }
             else
             {
@@ -215,7 +216,8 @@ void Ontology::CalculateTermidInformationForTest()
             {
                 if(_genesOfIntersts.find(genes) != _genesOfIntersts.end())
                 {
-                    NGOI_GOI++;
+                    //if(_genesOfIntersts[genes])
+                        NGOI_GOI++;
                 }
                 else
                 {
@@ -224,12 +226,12 @@ void Ontology::CalculateTermidInformationForTest()
                 genesAssociatedWithTerm++;
             }
         }
-        if(NGOI_GOI <= 0)
+        if(NGOI_GOI <= 0) // GOI C GOIS+NGOI * TOTALGENES - GOI+NGOI C GOI +NGOI - GOIs / (Population / sample)
             continue;
       
-        double val = HyperGeometricDistrubition(_totalNumberOfGenes, NGOI_GOI,
-            NGOI_GOI + genesNot_GOI_NGOI, genesAssociatedWithTerm);
-        if(val > p_value)
+        double val = HyperGeometricDistrubition(_totalNumberOfGenes, static_cast<double>(_GOIS.size()),
+            static_cast<double>(_genesOfIntersts.size()) , static_cast<double>(_genesOfIntersts.size()));
+        //if(val > p_value)
             std::cout << "Go Accession: " << i.second.goAccession << "  Value: " << val << std::endl;
     }
     
@@ -256,25 +258,27 @@ double Ontology::Combination(int n, int r)
     return (factorialOfN)/(factorialOfR);
 }
 
-std::vector<std::string> Ontology::GenerateRandomGenes()
+void Ontology::GenerateRandomGenes()
 {
-    std::vector<std::string> genes;
-   int count = 100;
-    std::mt19937 generator (std::chrono::system_clock::now().time_since_epoch().count());
-    std::uniform_real_distribution<int> dis(0, _genesOfIntersts.size());
-    for(auto i : _GOIS)
-    {
-        _genesOfIntersts[i] = false;
-    }
-    _GOIS.clear();
-    for(int i = 0; i < count; i++)
-    {
-        int ranNum = dis(generator);
-        auto val = std::unordered_map<std::string, bool>::iterator{_genesOfIntersts.begin()};
-        std::advance(val, ranNum);
-        val->second = true;
-        _GOIS.emplace_back(val->first);
-    }
+        std::vector<std::string> genes;
+        const int count = static_cast<int>(_GOIS.size());
+        std::mt19937 generator (std::chrono::system_clock::now().time_since_epoch().count());
+        std::uniform_real_distribution<double> dis(0, _genesOfIntersts.size());
+        for(const auto i : _GOIS)
+        {
+            _genesOfIntersts[i] = false;
+        }
+    CalculateTermidInformationForTest();
+        _GOIS.clear();
+        for(int i = 0; i < count; i++)
+        {
+            int ranNum = dis(generator);
+            auto val = std::unordered_map<std::string, bool>::iterator{_genesOfIntersts.begin()};
+            std::advance(val, ranNum);
+            val->second = true;
+            _GOIS.emplace_back(val->first);
+        }
+        CalculateTermidInformationForTest();
 }
 
 /**

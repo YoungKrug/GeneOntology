@@ -31,7 +31,8 @@ int main()
 	std::cout << "Please enter the path for you GOI file\n";
 	std::cin >> path;
 	ontology.ReadFile(path, Ontology::TAB_DELINEATED, Ontology::GOIORNGOI);
-	ontology.CalculateTermidInformationForTest();
+	ontology.GenerateRandomGenes();
+	//ontology.CalculateTermidInformationForTest();
 	/*while(input != "n")
 	{
 		std::cout << "Please enter for file... (n to exit)"<< std::endl;
