@@ -1,6 +1,7 @@
 ﻿#include "Ontology.h"
 
 #include <chrono>
+#include <corecrt_io.h>
 #include <iostream>
 #include <regex>
 
@@ -191,6 +192,10 @@ void Ontology::CalculateTermidInformationForTest()
     double p_value = ((double)_genesOfIntersts.size()/3.5)/_totalNumberOfGenes;
     std::cout <<"P-Value: " << p_value << std::endl;
     std::cout <<"Below are the significant values in the Ontology: \n";
+    double N_GOIs = 0;
+    double totalGenesAsscoiated = 0;
+    double totalGenesNotAssociated = 0;
+    std::unordered_map<std::string, bool> duplicateList;
     for(auto i : _termidInfo)
     {
         double NGOI_GOI = 0;
@@ -198,22 +203,29 @@ void Ontology::CalculateTermidInformationForTest()
         double genesNot_GOI_NGOI = 0;
         for(auto genes : i.second.geneId)
         {
+            if(duplicateList.find(genes) != duplicateList.end())
+                continue;
             if(_genesOfIntersts.find(genes) != _genesOfIntersts.end())
             {
                 //if(_genesOfIntersts[genes])
-                    NGOI_GOI++; //Only GOI
+                NGOI_GOI++; //Only GOI
             }
             else
             {
                 genesNot_GOI_NGOI++;
             }
             genesAssociatedWithTerm++;
+            duplicateList.insert({genes, true});
+            
         }
         for(auto children : i.second.childtermidId)
         {
+            
             TermidInfo temp = _termidInfo[children];
             for(auto genes : temp.geneId)
             {
+                if(duplicateList.find(genes) != duplicateList.end())
+                    continue;
                 if(_genesOfIntersts.find(genes) != _genesOfIntersts.end())
                 {
                     //if(_genesOfIntersts[genes])
@@ -224,16 +236,22 @@ void Ontology::CalculateTermidInformationForTest()
                     genesNot_GOI_NGOI++;
                 }
                 genesAssociatedWithTerm++;
+                duplicateList.insert({genes, true});
             }
         }
+        N_GOIs += NGOI_GOI;
+        totalGenesAsscoiated += genesAssociatedWithTerm;
+        totalGenesNotAssociated += genesNot_GOI_NGOI;
         if(NGOI_GOI <= 0) // GOI C GOIS+NGOI * TOTALGENES - GOI+NGOI C GOI +NGOI - GOIs / (Population / sample)
             continue;
       
-        double val = HyperGeometricDistrubition(_totalNumberOfGenes, static_cast<double>(_GOIS.size()),
-            static_cast<double>(_genesOfIntersts.size()) , static_cast<double>(_genesOfIntersts.size()));
+        // double val = HyperGeometricDistrubition(_totalNumberOfGenes, static_cast<double>(_GOIS.size()),
+        //     static_cast<double>(_genesOfIntersts.size()) , static_cast<double>(_genesOfIntersts.size()));
         //if(val > p_value)
-            std::cout << "Go Accession: " << i.second.goAccession << "  Value: " << val << std::endl;
+           // std::cout << "Go Accession: " << i.second.goAccession << "  Value: " << val << std::endl;
     }
+     double val = HyperGeometricDistrubition(_totalNumberOfGenes, N_GOIs,
+        totalGenesAsscoiated , totalGenesNotAssociated);
     
 }
 
