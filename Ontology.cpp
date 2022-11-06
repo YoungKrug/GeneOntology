@@ -1,7 +1,6 @@
 ﻿#include "Ontology.h"
 
 #include <chrono>
-#include <corecrt_io.h>
 #include <iostream>
 #include <regex>
 
@@ -134,7 +133,6 @@ void Ontology::AddToDBBasedOnType(FileType fileType, std::string line, std::stri
                 if(i == 0) // the first key is the termid
                 {
                     key = currentString; // key is gene
-                    _termidInfo[currentString].termidId = currentString;
                     _totalNumberOfGenes++;
                 }
                 else
@@ -193,32 +191,30 @@ void Ontology::CalculateTermidInformationForTest()
     std::cout <<"P-Value: " << p_value << std::endl;
     std::cout <<"Below are the significant values in the Ontology: \n";
     double sum = 0;
-    double N_GOIs = 0;
-    double totalGenesAsscoiated = 0;
-    double totalGenesNotAssociated = 0;
+    double goisAssociatedWithTerms = 0;
+    double ngoisAssociatedWithTerms = 0;
+    double goisGenesNotAssociated = 0;
+    double nGoisGenesNotAssociated = 0;
+    double amountOfGenesOfInterest = static_cast<double>(_genesOfIntersts.size());
+    double totalGOIs = static_cast<double>(_GOIS.size());
     //std::unordered_map<std::string, bool> duplicateList;
     for(auto i : _termidInfo)
     {
-        double NGOI_GOI = 0;
-        double GOI;
-        double genesAssociatedWithTerm = 0;
-        double genesNot_GOI_NGOI = 0;
+        double GOIs = 0;
+        double NGOIs = 0;
+        double goisGenesAssociated = 0;
+        double nGoisGenesAssociated = 0;
         for(auto genes : i.second.geneId)
         {
             if(_genesOfIntersts.find(genes) != _genesOfIntersts.end())
             {
-                //if(_genesOfIntersts[genes])
-                NGOI_GOI++; //Only GOI
-                if (i.second.isGOI)
-                    GOI++;
+                if(_genesOfIntersts[genes])
+                    GOIs++; //Only GOI
+                else
+                {
+                    NGOIs++;
+                }
             }
-            else
-            {
-                genesNot_GOI_NGOI++;
-            }
-            genesAssociatedWithTerm++;
-            //duplicateList.insert({genes, true});
-            
         }
         for(auto children : i.second.childtermidId)
         {
@@ -228,36 +224,33 @@ void Ontology::CalculateTermidInformationForTest()
             {
                 if(_genesOfIntersts.find(genes) != _genesOfIntersts.end())
                 {
-                    //if(_genesOfIntersts[genes])
-                	NGOI_GOI++;
-                	if (i.second.isGOI)
-                		GOI++;
+                    if(_genesOfIntersts[genes])
+                        GOIs++; //Only GOI
+                    else
+                    {
+                        NGOIs++;
+                    }
                 }
-                else
-                {
-                    genesNot_GOI_NGOI++;
-                }
-                genesAssociatedWithTerm++;
-                //duplicateList.insert({genes, true});
             }
         }
-        N_GOIs += NGOI_GOI;
-        totalGenesAsscoiated += genesAssociatedWithTerm;
-        totalGenesNotAssociated += genesNot_GOI_NGOI;
-        if(NGOI_GOI <= 0) // GOI C GOIS+NGOI * TOTALGENES - GOI+NGOI C GOI +NGOI - GOIs / (Population / sample)
-            continue;
-      
-         double val = HyperGeometricDistrubition(_totalNumberOfGenes, NGOI_GOI,
-             genesAssociatedWithTerm, static_cast<double>(_genesOfIntersts.size()));
-         if (!isnan(val))
+      //  if(NGOI_GOI <= 0) // GOI C GOIS+NGOI * TOTALGENES - GOI+NGOI C GOI +NGOI - GOIs / (Population / sample)
+           // continue;
+        
+         double val = HyperGeometricDistrubition(amountOfGenesOfInterest, GOIs,
+             totalGOIs, totalGOIs);
+         if (!std::isnan(val))
          {
              sum += val;
-             std::cout << "Go Accession: " << i.second.goAccession << "  Value: " << val << std::endl;
+             if(val > p_value)
+             {
+                 std::cout << "Go Accession: " << i.second.goAccession << "  Value: " << val << std::endl;
+             }
          }
     }
     std::cout << "Final distribution: " << sum << std::endl;
-     //double val = HyperGeometricDistrubition(_totalNumberOfGenes, N_GOIs,
-       // totalGenesAsscoiated , totalGenesNotAssociated);
+    // double val = HyperGeometricDistrubition(amountOfGenesOfInterest, GOIs,
+    //        totalGOIs, genesAssociatedWithTerm);
+    // // std::cout << "Final p-value: " << val << std::endl;
     
 }
 
@@ -284,6 +277,12 @@ double Ontology::Combination(int n, int r)
 
 void Ontology::GenerateRandomGenes()
 {
+    CalculateTermidInformationForTest();
+    int num;
+    std::cout << "How many times do you want to permute the data set?" << std::endl;
+    std::cin >> num;
+    for(int temp = 0; temp < num; temp++)
+    {
         std::vector<std::string> genes;
         const int count = static_cast<int>(_GOIS.size());
         std::mt19937 generator (std::chrono::system_clock::now().time_since_epoch().count());
@@ -292,7 +291,13 @@ void Ontology::GenerateRandomGenes()
         {
             _genesOfIntersts[i] = false;
         }
-    CalculateTermidInformationForTest();
+        int counter = 0;
+        for(auto i : _genesOfIntersts)
+        {
+            if(i.second)
+                counter++;
+        }
+        std::cout << "There are " << counter << " Genes of interest" <<std::endl;
         _GOIS.clear();
         for(int i = 0; i < count; i++)
         {
@@ -302,7 +307,15 @@ void Ontology::GenerateRandomGenes()
             val->second = true;
             _GOIS.emplace_back(val->first);
         }
+        counter = 0;
+        for(auto i : _genesOfIntersts)
+        {
+            if(i.second)
+                counter++;
+        }
+        std::cout << "There are " << counter << " Genes of interest" <<std::endl;
         CalculateTermidInformationForTest();
+    }
 }
 
 /**
@@ -312,10 +325,13 @@ void Ontology::GenerateRandomGenes()
  * \param sampleSize 
  * \param initialPopulation 
  * \return 
- */
+ */ //Go and associated with term, NGOI and assoicated
+    //NGOI and associated with terms
+    //GOI and not associated with terms
+    //NGOI and not associated with terms
 double Ontology::HyperGeometricDistrubition(double population, double successInInitialPopulation, double sampleSize, double initialPopulation)
 {
-    int otherPop = population - initialPopulation;
+    double otherPop = population - initialPopulation;
     double probOfInitial = Combination(initialPopulation, successInInitialPopulation);
     double probOfOther = Combination(otherPop, sampleSize - successInInitialPopulation);
     double probOfPopulation = Combination(population, sampleSize);

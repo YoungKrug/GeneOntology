@@ -51,5 +51,6 @@ private:
     std::unordered_map<std::string, DelimiterType> _demlimiterTypeStrings ={ {"C", COMMA_DELINEATED},{"T", TAB_DELINEATED}};
     std::vector<std::string> _GOIS;
     std::unordered_map<std::string, bool> _genesOfIntersts;
+    std::vector<std::string> _allGenes;
     double _totalNumberOfGenes = 0;
 };
