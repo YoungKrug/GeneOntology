@@ -11,6 +11,7 @@ void Ontology::ReadFile(std::string filePath, DelimiterType dType, FileType fTyp
     std::string line;
     std::string demlimiter = "";
     std::string fileEnum = "";
+    std::cout << "Reading File: " <<  filePath << std::endl;
     if (dType == NONE)
     {
         while (_demlimiterTypeStrings.find(demlimiter) == _demlimiterTypeStrings.end())
@@ -207,10 +208,8 @@ void Ontology::CalculateTermidInformationForTest()
         {
             if(_genesOfIntersts.find(genes) != _genesOfIntersts.end())
             {
-                //if(_genesOfIntersts[genes])
-                NGOI_GOI++; //Only GOI
-                if (i.second.isGOI)
-                    GOI++;
+                if(_genesOfIntersts[genes])
+                    NGOI_GOI++; //Only GOI
             }
             else
             {
@@ -228,10 +227,8 @@ void Ontology::CalculateTermidInformationForTest()
             {
                 if(_genesOfIntersts.find(genes) != _genesOfIntersts.end())
                 {
-                    //if(_genesOfIntersts[genes])
-                	NGOI_GOI++;
-                	if (i.second.isGOI)
-                		GOI++;
+                    if(_genesOfIntersts[genes])
+                        NGOI_GOI++;
                 }
                 else
                 {
@@ -247,8 +244,8 @@ void Ontology::CalculateTermidInformationForTest()
         if(NGOI_GOI <= 0) // GOI C GOIS+NGOI * TOTALGENES - GOI+NGOI C GOI +NGOI - GOIs / (Population / sample)
             continue;
       
-         double val = HyperGeometricDistrubition(_totalNumberOfGenes, NGOI_GOI,
-             genesAssociatedWithTerm, static_cast<double>(_genesOfIntersts.size()));
+        double val = HyperGeometricDistrubition(_totalNumberOfGenes, NGOI_GOI,
+            NGOI_GOI + genesNot_GOI_NGOI, genesAssociatedWithTerm);
          if (!isnan(val))
          {
              sum += val;
@@ -284,6 +281,12 @@ double Ontology::Combination(int n, int r)
 
 void Ontology::GenerateRandomGenes()
 {
+    CalculateTermidInformationForTest();
+    int num;
+    std::cout << "How many times do you want to permute the data set?" << std::endl;
+    std::cin >> num;
+    for(int temp = 0; temp < num; temp++)
+    {
         std::vector<std::string> genes;
         const int count = static_cast<int>(_GOIS.size());
         std::mt19937 generator (std::chrono::system_clock::now().time_since_epoch().count());
@@ -292,7 +295,12 @@ void Ontology::GenerateRandomGenes()
         {
             _genesOfIntersts[i] = false;
         }
-    CalculateTermidInformationForTest();
+        int counter = 0;
+        for(auto i : _genesOfIntersts)
+        {
+            if(i.second)
+                counter++;
+        }
         _GOIS.clear();
         for(int i = 0; i < count; i++)
         {
@@ -302,7 +310,14 @@ void Ontology::GenerateRandomGenes()
             val->second = true;
             _GOIS.emplace_back(val->first);
         }
+        counter = 0;
+        for(auto i : _genesOfIntersts)
+        {
+            if(i.second)
+                counter++;
+        }
         CalculateTermidInformationForTest();
+    }
 }
 
 /**
