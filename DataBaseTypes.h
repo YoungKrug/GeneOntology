@@ -25,6 +25,7 @@ namespace DataTypes
 		std::string definition;
 		std::string goAccession;
 		bool isGOI = false;
+		double p_value = 0;
 		void Print(std::unordered_map<std::string ,TermidInfo> _info, std::unordered_map<std::string, bool> _genesOfInterest)
 		{
 			int GOIs = 0;

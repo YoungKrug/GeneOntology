@@ -200,7 +200,7 @@ void Ontology::CalculateTermidInformationForTest()
     //std::unordered_map<std::string, bool> duplicateList;
     for(auto i : _termidInfo)
     {
-        double NGOI_GOI = 0;
+        double NGOI = 0;
         double GOI;
         double genesAssociatedWithTerm = 0;
         double genesNot_GOI_NGOI = 0;
@@ -209,7 +209,11 @@ void Ontology::CalculateTermidInformationForTest()
             if(_genesOfIntersts.find(genes) != _genesOfIntersts.end())
             {
                 if(_genesOfIntersts[genes])
-                    NGOI_GOI++; //Only GOI
+                    GOI++; //Only GOI
+                else
+                {
+                    NGOI++;
+                }
             }
             else
             {
@@ -228,7 +232,11 @@ void Ontology::CalculateTermidInformationForTest()
                 if(_genesOfIntersts.find(genes) != _genesOfIntersts.end())
                 {
                     if(_genesOfIntersts[genes])
-                        NGOI_GOI++;
+                        GOI++; //Only GOI
+                    else
+                    {
+                        NGOI++;
+                    }
                 }
                 else
                 {
@@ -238,14 +246,14 @@ void Ontology::CalculateTermidInformationForTest()
                 //duplicateList.insert({genes, true});
             }
         }
-        N_GOIs += NGOI_GOI;
+        N_GOIs += NGOI + GOI;
         totalGenesAsscoiated += genesAssociatedWithTerm;
         totalGenesNotAssociated += genesNot_GOI_NGOI;
-        if(NGOI_GOI <= 0) // GOI C GOIS+NGOI * TOTALGENES - GOI+NGOI C GOI +NGOI - GOIs / (Population / sample)
+        if(NGOI + GOI <= 0) // GOI C GOIS+NGOI * TOTALGENES - GOI+NGOI C GOI +NGOI - GOIs / (Population / sample)
             continue;
       
-        double val = HyperGeometricDistrubition(_totalNumberOfGenes, NGOI_GOI,
-            NGOI_GOI + genesNot_GOI_NGOI, genesAssociatedWithTerm);
+        double val = HyperGeometricDistrubition(_totalNumberOfGenes, NGOI + GOI,
+            NGOI + GOI + genesNot_GOI_NGOI, genesAssociatedWithTerm);
          if (!isnan(val))
          {
              sum += val;
