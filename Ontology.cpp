@@ -188,20 +188,22 @@ std::ifstream Ontology::OpenFile(std::string path)
     return reader;
 }
 
-void Ontology::CalculateTermidInformationForTest()
+double Ontology::CalculateTermidInformationForTest()
 {
-    double p_value = ((double)_genesOfIntersts.size()/3.5)/_totalNumberOfGenes;
-    std::cout <<"P-Value: " << p_value << std::endl;
+  //  double p_value = ((double)_genesOfIntersts.size()/3.5)/_totalNumberOfGenes;
+//    std::cout <<"P-Value: " << p_value << std::endl;
     std::cout <<"Below are the significant values in the Ontology: \n";
     double sum = 0;
     double N_GOIs = 0;
     double totalGenesAsscoiated = 0;
     double totalGenesNotAssociated = 0;
     //std::unordered_map<std::string, bool> duplicateList;
+    int amount = 0;
     for(auto i : _termidInfo)
     {
+       
         double NGOI = 0;
-        double GOI;
+        double GOI = 0;
         double genesAssociatedWithTerm = 0;
         double genesNot_GOI_NGOI = 0;
         for(auto genes : i.second.geneId)
@@ -249,6 +251,7 @@ void Ontology::CalculateTermidInformationForTest()
         N_GOIs += NGOI + GOI;
         totalGenesAsscoiated += genesAssociatedWithTerm;
         totalGenesNotAssociated += genesNot_GOI_NGOI;
+        amount++;
         if(NGOI + GOI <= 0) // GOI C GOIS+NGOI * TOTALGENES - GOI+NGOI C GOI +NGOI - GOIs / (Population / sample)
             continue;
       
@@ -257,10 +260,12 @@ void Ontology::CalculateTermidInformationForTest()
          if (!isnan(val))
          {
              sum += val;
-             std::cout << "Go Accession: " << i.second.goAccession << "  Value: " << val << std::endl;
+            // std::cout << "Go Accession: " << i.second.goAccession << "  Value: " << val << std::endl;
          }
     }
+    sum = sum/static_cast<double>(amount);
     std::cout << "Final distribution: " << sum << std::endl;
+    return sum;
      //double val = HyperGeometricDistrubition(_totalNumberOfGenes, N_GOIs,
        // totalGenesAsscoiated , totalGenesNotAssociated);
     
@@ -293,6 +298,7 @@ void Ontology::GenerateRandomGenes()
     int num;
     std::cout << "How many times do you want to permute the data set?" << std::endl;
     std::cin >> num;
+    double sum = 0;
     for(int temp = 0; temp < num; temp++)
     {
         std::vector<std::string> genes;
@@ -324,8 +330,9 @@ void Ontology::GenerateRandomGenes()
             if(i.second)
                 counter++;
         }
-        CalculateTermidInformationForTest();
+       sum += CalculateTermidInformationForTest();
     }
+    std::cout << "Empirical Distribution: " << sum/static_cast<double>(num);
 }
 
 /**

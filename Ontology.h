@@ -29,7 +29,7 @@ public:
     void AddToDBBasedOnType(FileType, std::string, std::string);
     std::string DetermineDelimited(DelimiterType);
     std::ifstream OpenFile(std::string);
-    void CalculateTermidInformationForTest();
+    double CalculateTermidInformationForTest();
     void DisplayValue(std::string);
     double Combination(int,int);
     double ChiSquaredTest(double);
