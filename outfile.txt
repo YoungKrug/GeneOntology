@@ -1,0 +1,5 @@
+First Distribution: 0.197831
+Permutation 0Value: 0.256500
+Permutation 1Value: 0.252702
+Permutation 2Value: 0.214304
+Permutation 3Value: 0.183109

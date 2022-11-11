@@ -32,7 +32,7 @@ public:
     double CalculateTermidInformationForTest();
     void DisplayValue(std::string);
     double Combination(int,int);
-    double ChiSquaredTest(double);
+    void PrintToOutFile() const;
     void GenerateRandomGenes();
     /**
      * \brief
@@ -51,5 +51,6 @@ private:
     std::unordered_map<std::string, DelimiterType> _demlimiterTypeStrings ={ {"C", COMMA_DELINEATED},{"T", TAB_DELINEATED}};
     std::vector<std::string> _GOIS;
     std::unordered_map<std::string, bool> _genesOfIntersts;
+    std::vector<std::string> _outputfileInformation;
     double _totalNumberOfGenes = 0;
 };

@@ -190,9 +190,9 @@ std::ifstream Ontology::OpenFile(std::string path)
 
 double Ontology::CalculateTermidInformationForTest()
 {
-  //  double p_value = ((double)_genesOfIntersts.size()/3.5)/_totalNumberOfGenes;
-//    std::cout <<"P-Value: " << p_value << std::endl;
-    std::cout <<"Below are the significant values in the Ontology: \n";
+    double p_value = ((double)_genesOfIntersts.size()/3.5)/_totalNumberOfGenes;
+    std::cout <<"Performing Distribution..." << std::endl;
+  //  std::cout <<"Below are the significant values in the Ontology: \n";
     double sum = 0;
     double N_GOIs = 0;
     double totalGenesAsscoiated = 0;
@@ -252,7 +252,7 @@ double Ontology::CalculateTermidInformationForTest()
         totalGenesAsscoiated += genesAssociatedWithTerm;
         totalGenesNotAssociated += genesNot_GOI_NGOI;
         amount++;
-        if(NGOI + GOI <= 0) // GOI C GOIS+NGOI * TOTALGENES - GOI+NGOI C GOI +NGOI - GOIs / (Population / sample)
+        if(GOI <= 0) // GOI C GOIS+NGOI * TOTALGENES - GOI+NGOI C GOI +NGOI - GOIs / (Population / sample)
             continue;
       
         double val = HyperGeometricDistrubition(_totalNumberOfGenes, NGOI + GOI,
@@ -260,11 +260,15 @@ double Ontology::CalculateTermidInformationForTest()
          if (!isnan(val))
          {
              sum += val;
-            // std::cout << "Go Accession: " << i.second.goAccession << "  Value: " << val << std::endl;
+             std::string sigVals;
+             sigVals.append("Significant Go Accession: " + i.second.goAccession + "  Value: " + std::to_string(val));
+             _outputfileInformation.emplace_back(sigVals);
+             //if(val > p_value)
+                //std::cout << "Go Accession: " << i.second.goAccession << "  Value: " << val << std::endl;
          }
     }
-    sum = sum/static_cast<double>(amount);
-    std::cout << "Final distribution: " << sum << std::endl;
+   // sum = sum/static_cast<double>(amount);
+    //std::cout << "Final distribution: " << sum << std::endl;
     return sum;
      //double val = HyperGeometricDistrubition(_totalNumberOfGenes, N_GOIs,
        // totalGenesAsscoiated , totalGenesNotAssociated);
@@ -292,17 +296,41 @@ double Ontology::Combination(int n, int r)
     return (factorialOfN)/(factorialOfR);
 }
 
+void Ontology::PrintToOutFile() const
+{
+    std::string path;
+    std::ofstream of;
+    std::cout << "Please enter the path of your output file." << std::endl;
+    std::cin >>path;
+    of.open(path);
+    while(!of.is_open())
+    {
+        std::cout << "Please enter the path of your output file." << std::endl;
+        std::cin >>path;
+        of.open(path);
+    }
+    
+    for(auto i : _outputfileInformation)
+    {
+        of << i << std::endl;
+    }
+}
+
 void Ontology::GenerateRandomGenes()
 {
-    CalculateTermidInformationForTest();
+    double startingValue = CalculateTermidInformationForTest();
+    std::string startOutput;
+    startOutput.append("First Distribution: " + std::to_string(startingValue));
+    _outputfileInformation.emplace_back(startOutput);
     int num;
     std::cout << "How many times do you want to permute the data set?" << std::endl;
     std::cin >> num;
     double sum = 0;
+    const int count = static_cast<int>(_GOIS.size());
     for(int temp = 0; temp < num; temp++)
     {
+        std::cout <<"Performing Test: " << std::to_string(temp + 1) << "..." << std::endl;
         std::vector<std::string> genes;
-        const int count = static_cast<int>(_GOIS.size());
         std::mt19937 generator (std::chrono::system_clock::now().time_since_epoch().count());
         std::uniform_real_distribution<double> dis(0, _genesOfIntersts.size());
         for(const auto i : _GOIS)
@@ -330,9 +358,17 @@ void Ontology::GenerateRandomGenes()
             if(i.second)
                 counter++;
         }
-       sum += CalculateTermidInformationForTest();
+        double val = CalculateTermidInformationForTest();
+        sum += val;
+        std::string outputString;
+        outputString.append("Permutation " + std::to_string(temp + 1) + "  Value: " + std::to_string(val));
+        _outputfileInformation.emplace_back(outputString);
     }
-    std::cout << "Empirical Distribution: " << sum/static_cast<double>(num);
+    std::string str;
+    str.append("Empirical Distribution: " +  std::to_string(sum/static_cast<double>(num)));
+    _outputfileInformation.emplace_back(str);
+   // std::cout << "Empirical Distribution: " <<
+    PrintToOutFile();
 }
 
 /**
