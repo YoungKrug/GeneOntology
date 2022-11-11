@@ -1,7 +1,5 @@
 ﻿#include "Ontology.h"
-
 #include <chrono>
-#include <corecrt_io.h>
 #include <iostream>
 #include <regex>
 
@@ -34,10 +32,15 @@ void Ontology::ReadFile(std::string filePath, DelimiterType dType, FileType fTyp
     std::string finalDelimiter = demlimiter == "" ? DetermineDelimited(dType) : DetermineDelimited(_demlimiterTypeStrings[demlimiter]);
     FileType finalFileType = fileEnum == "" ? fType : _fileTypeStrings[fileEnum];
     reader = OpenFile(filePath);
+    std::clock_t start;
+    double duration;
+    start = std::clock();
     while(std::getline(reader, line))
     {
         AddToDBBasedOnType(finalFileType, line, finalDelimiter);
     }
+    duration = ( std::clock() - start ) / static_cast<double>(CLOCKS_PER_SEC);
+    std::cout<<"Reading this file took:  "<< duration << " Seconds " << std::endl;
 }
 void Ontology::AddToDBBasedOnType(FileType fileType, std::string line, std::string delimiter)
 {
@@ -260,11 +263,13 @@ double Ontology::CalculateTermidInformationForTest()
          if (!isnan(val))
          {
              sum += val;
-             std::string sigVals;
-             sigVals.append("Significant Go Accession: " + i.second.goAccession + "  Value: " + std::to_string(val));
-             _outputfileInformation.emplace_back(sigVals);
-             //if(val > p_value)
-                //std::cout << "Go Accession: " << i.second.goAccession << "  Value: " << val << std::endl;
+             if(val > p_value)
+             {
+                 std::string sigVals;
+                 sigVals.append("Significant Go Accession: " + i.second.goAccession + "  Value: " + std::to_string(val));
+                 _outputfileInformation.emplace_back(sigVals);
+                // std::cout << "Go Accession: " << i.second.goAccession << "  Value: " << val << std::endl;
+             }
          }
     }
    // sum = sum/static_cast<double>(amount);
@@ -318,7 +323,12 @@ void Ontology::PrintToOutFile() const
 
 void Ontology::GenerateRandomGenes()
 {
+    std::clock_t start;
+    double duration;
+    start = std::clock();
     double startingValue = CalculateTermidInformationForTest();
+    duration = ( std::clock() - start ) / static_cast<double>(CLOCKS_PER_SEC);
+    std::cout<<"It took "<< duration << " for the initial distribution" << std::endl;
     std::string startOutput;
     startOutput.append("First Distribution: " + std::to_string(startingValue));
     _outputfileInformation.emplace_back(startOutput);
@@ -327,6 +337,8 @@ void Ontology::GenerateRandomGenes()
     std::cin >> num;
     double sum = 0;
     const int count = static_cast<int>(_GOIS.size());
+    start = std::clock();
+    duration = 0;
     for(int temp = 0; temp < num; temp++)
     {
         std::cout <<"Performing Test: " << std::to_string(temp + 1) << "..." << std::endl;
@@ -364,13 +376,14 @@ void Ontology::GenerateRandomGenes()
         outputString.append("Permutation " + std::to_string(temp + 1) + "  Value: " + std::to_string(val));
         _outputfileInformation.emplace_back(outputString);
     }
+    duration = ( std::clock() - start ) / static_cast<double>(CLOCKS_PER_SEC);
+    std::cout<<"It took "<< duration << " for user permutations and distribution" <<std::endl;
     std::string str;
     str.append("Empirical Distribution: " +  std::to_string(sum/static_cast<double>(num)));
     _outputfileInformation.emplace_back(str);
    // std::cout << "Empirical Distribution: " <<
     PrintToOutFile();
 }
-
 /**
  * \brief 
  * \param population

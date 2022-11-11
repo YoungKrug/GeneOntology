@@ -3,6 +3,7 @@
 #include <fstream>
 #include <unordered_map>
 #include <random>
+#include <ctime>
 #include "DataBaseTypes.h"
 using namespace DataTypes;
 
@@ -53,4 +54,7 @@ private:
     std::unordered_map<std::string, bool> _genesOfIntersts;
     std::vector<std::string> _outputfileInformation;
     double _totalNumberOfGenes = 0;
+    double persistantTime;
+    double currentTime;
+    double stampedTime;
 };

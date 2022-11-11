@@ -1,6 +1,7 @@
 // GeneOntology.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
+#include<ctime>
 #include <iostream>
 #include <string>
 #include "Ontology.h" // non gene of interest, 1 is gene of interest
@@ -22,6 +23,9 @@ int main()
 	Ontology ontology;
 	std::string path;
 	std::string input;
+	std::clock_t start;
+	double duration;
+	start = std::clock();
 	if(!useDefault)
 	{
 		std::cout << "Please enter your primary gene Annot file\n";
@@ -51,25 +55,8 @@ int main()
 	{
 		ReadDefault(ontology);
 	}
-	
-	/*while(input != "n")
-	{
-		std::cout << "Please enter for file... (n to exit)"<< std::endl;
-		std::string temp;
-		std::cin >> temp;
-		if(std::toupper(temp[0]) == 'N')
-		{
-			break;
-		}
-		path = temp;
-		ontology.ReadFile(path);
-	}*/
-	// input = "";
-	// while (input != "n")
-	// {
-	// 	std::cout << "Enter another GO AccessionNumber or enter 'n' to exit" << std::endl;
-	// 	std::cin >> input;
-	// 	ontology.DisplayValue(input);
-	// }
+
+	duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
+	std::cout<<"The duration of the entire program(including user input): "<< duration << std::endl;
 	return 0;
 }
