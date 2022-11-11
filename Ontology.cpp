@@ -260,7 +260,7 @@ double Ontology::CalculateTermidInformationForTest()
       
         double val = HyperGeometricDistrubition(_totalNumberOfGenes, NGOI + GOI,
             NGOI + GOI + genesNot_GOI_NGOI, genesAssociatedWithTerm);
-         if (!isnan(val))
+         if (!std::isnan(val))
          {
              sum += val;
              if(val > p_value)
